@@ -2,6 +2,7 @@ import './App.css';
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import { Layout } from './Components/layout';
 import { Home } from './Pages/Home';
+
 import { SignIn } from './Pages/SignIn';
 import { SignUp } from './Pages/SignUp';
 import { Dashboard } from './Pages/Dashboard';
