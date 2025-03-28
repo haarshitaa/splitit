@@ -1,5 +1,5 @@
 import './App.css';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import { Layout } from './Components/layout';
 import { Home } from './Pages/Home';
 import { SignIn } from './Pages/SignIn';
@@ -14,7 +14,7 @@ import { Groups } from './Pages/Groups';
 
 function App() {
     return (
-        <BrowserRouter>
+        <HashRouter>
             <Routes>
                 {/* Wrap pages inside Layout */}
                 <Route path="/" element={<Home />} />
@@ -28,7 +28,7 @@ function App() {
                 <Route path="/history" element={<Layout><History /></Layout>} />
                 <Route path="/groups" element={<Layout><Groups /></Layout>} />
             </Routes>
-        </BrowserRouter>
+        </HashRouter>
     );
 }
 

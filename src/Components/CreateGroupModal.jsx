@@ -31,7 +31,7 @@ export function CreateGroupModal({ onClose }) {
 
         try {
             const token = localStorage.getItem("token"); // Assuming token is stored here
-            const res = await fetch("http://localhost:8787/creategroup", {
+            const res = await fetch("https://splititb.harshitacodes.workers.dev/creategroup", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

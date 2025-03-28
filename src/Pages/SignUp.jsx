@@ -49,7 +49,7 @@ export function SignUp() {
         setLoading(true);
     
         try {
-            const response = await axios.post("http://localhost:8787/signup", {
+            const response = await axios.post("https://splititb.harshitacodes.workers.dev/signup", {
                 email,
                 name,
                 password

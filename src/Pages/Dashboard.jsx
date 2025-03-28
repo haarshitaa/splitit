@@ -6,7 +6,7 @@ import { DashCom } from '../Components/DashCom';
 import { useNavigate } from "react-router-dom";
 
 
-export function Dashboard({name}) {
+export function Dashboard({name, isloading1}) {
     const navigate = useNavigate();
     const [friends, setFriends] = useState([]);
     const [user, setUser] = useState({ name: "Guest" }); 
@@ -25,7 +25,7 @@ export function Dashboard({name}) {
 
     return (
         // <Layout user={user}>
-            <DashCom user={name} />
+            <DashCom user={name} isloading1 = {isloading1}/>
         //  </Layout> 
     );
 }

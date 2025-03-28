@@ -1,20 +1,3 @@
-// import { Link } from "react-router-dom";
-
-
-// export function ArticleBox({title, description, url,image}){
-//     return (
-//         <div>
-//             {image}
-//             {title}
-//             {description}
-//             {url}
-//         </div>
-//     )
-// }
-
-
-
-
 import PropTypes from "prop-types";
 import Typography from "@mui/material/Typography";
 import Card from "@mui/material/Card";

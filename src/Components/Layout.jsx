@@ -23,7 +23,7 @@ export const Layout = memo(({ user, children }) => {
 
             try {
                 setLoading1(true);
-                const response = await axios.get("http://127.0.0.1:8787/getuser", {
+                const response = await axios.get("https://splititb.harshitacodes.workers.dev/getuser", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -54,7 +54,7 @@ export const Layout = memo(({ user, children }) => {
 
         async function fetchFriends() {
             try {
-                const response = await axios.get("http://127.0.0.1:8787/getallfriends", {
+                const response = await axios.get("https://splititb.harshitacodes.workers.dev/getallfriends", {
                     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
                 });
 
