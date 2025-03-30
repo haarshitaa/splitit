@@ -2,11 +2,17 @@ import BookIcon from "@mui/icons-material/MenuBook";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { Link, useLocation } from "react-router-dom";
+import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 
 const sidebarItems = [
   { label: "Articles", icon: <BookIcon />, to: "/articles" },
   { label: "Settings", icon: <SettingsIcon />, to: "/setting" },
 ];
+
+
+{/* <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+                    <CurrencyExchangeIcon sx={{ fontSize: 60, color: 'primary.main', transform: 'rotate(20deg)' }} />
+                </Box> */}
 
 function SidebarItem({ label, icon, to }) {
   const location = useLocation();
@@ -40,12 +46,8 @@ export function BarSide({ user }) {
     >
       <div className="h-full px-3 py-4 overflow-y-auto bg-customBg">
         {/* Logo */}
-        <div>
-          <img
-            src="/assets/logo.png"
-            alt="Logo"
-            className="w-34 h-auto mx-auto mb-14"
-          />
+        <div className="ml-3">
+        <CurrencyExchangeIcon sx={{ fontSize: 60, color: 'white', transform: 'rotate(20deg)' }} />
         </div>
 
         {/* Sidebar Navigation */}
