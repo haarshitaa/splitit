@@ -1,49 +1,37 @@
 import { useState } from "react";
+import axios from "axios";
 
 export function CreateFriendModal({ onClose }) {
-    const [groupName, setGroupName] = useState("");
-    const [description, setDescription] = useState("");
-    const [image, setImage] = useState("");
-    const [members, setMembers] = useState([{ name: "", email: "" }]);
+    const [FriendName, setFriendName] = useState("");
+    const [FriendEmail, setFriendEmail] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-
-    const handleAddMember = () => {
-        setMembers([...members, { name: "", email: "" }]);
-    };
-
-    const handleMemberChange = (index, field, value) => {
-        const updatedMembers = [...members];
-        updatedMembers[index][field] = value;
-        setMembers(updatedMembers);
-    };
 
     const handleSubmit = async () => {
         setLoading(true);
         setError("");
 
         const payload = {
-            name: groupName,
-            description,
-            image: image || "https://img.com", // Default image if none provided
-            members: members.filter(m => m.name && m.email), // Only include valid members
+            name: FriendName,
+            email: FriendEmail,
         };
 
         try {
             const token = localStorage.getItem("token"); // Assuming token is stored here
-            const res = await fetch("https://splititb.harshitacodes.workers.dev/createfriend", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(payload),
-            });
+            const res = await axios.post(
+                "https://splititb.harshitacodes.workers.dev/createfriend",
+                payload,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
 
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.msg || "Error creating group");
+            if (res.status !== 200) throw new Error(res.data.msg || "Error Adding Friend");
 
-            alert("Group created successfully!");
+            alert("Friend Added successfully!");
             onClose();
         } catch (err) {
             setError(err.message);
@@ -55,57 +43,24 @@ export function CreateFriendModal({ onClose }) {
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <div className="bg-white p-6 rounded-lg w-96">
-                <h2 className="text-xl font-bold mb-4">Create Group</h2>
+                <h2 className="text-xl font-bold mb-4">Add Friend</h2>
 
                 <input
                     type="text"
-                    placeholder="Group Name"
-                    value={groupName}
-                    onChange={(e) => setGroupName(e.target.value)}
+                    placeholder="Friend Name"
+                    value={FriendName}
+                    onChange={(e) => setFriendName(e.target.value)}
                     className="w-full p-2 border border-gray-300 rounded mb-3"
                 />
                 <input
                     type="text"
-                    placeholder="Description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded mb-3"
-                />
-                <input
-                    type="text"
-                    placeholder="Image URL"
-                    value={image}
-                    onChange={(e) => setImage(e.target.value)}
+                    placeholder="Email"
+                    value={FriendEmail}
+                    onChange={(e) => setFriendEmail(e.target.value)}
                     className="w-full p-2 border border-gray-300 rounded mb-3"
                 />
 
-                <h3 className="text-lg font-semibold mt-3">Add Members</h3>
-                {members.map((member, index) => (
-                    <div key={index} className="flex gap-2 mb-2">
-                        <input
-                            type="text"
-                            placeholder="Name"
-                            value={member.name}
-                            onChange={(e) => handleMemberChange(index, "name", e.target.value)}
-                            className="flex-1 p-2 border border-gray-300 rounded"
-                        />
-                        <input
-                            type="email"
-                            placeholder="Email"
-                            value={member.email}
-                            onChange={(e) => handleMemberChange(index, "email", e.target.value)}
-                            className="flex-1 p-2 border border-gray-300 rounded"
-                        />
-                    </div>
-                ))}
-                <button
-                    onClick={handleAddMember}
-                    className="text-blue-500 hover:underline mb-3"
-                >
-                    + Add Another Member
-                </button>
-
-                {error && <p className="text-red-500">{error}</p>}
+                {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
 
                 <div className="flex justify-end gap-2">
                     <button onClick={onClose} className="px-4 py-2 bg-gray-300 rounded">
