@@ -2,27 +2,54 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-export function CreateSplitBox({ isOpen, onClose }) {
+// there is some error in  creating split 
+
+export function CreateSplitBox({ isOpen, onClose , friends}) {
   const user = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
 
-  const [formData, setFormData] = useState({
+
+  const DEFAULT_FORM_STATE = {
     description: "",
     image: "https://img.com",
     currency: "INR",
     amount: "",
     note: "",
-    participants: [], // Will be initialized with logged-in user
+    participants: [],
     paidById: "",
     splitType: "EQUAL",
     shares: [],
     percentages: [],
     exactAmounts: []
-  });
+  };
+
 
   const [errors, setErrors] = useState([]);
   const [activeTab, setActiveTab] = useState("details");
-  const [friends, setFriends] = useState([]);
+  const [formData, setFormData] = useState(DEFAULT_FORM_STATE);
+
+  useEffect(() => {
+    if (isOpen) {
+      resetForm();
+    }
+  }, [isOpen]);
+
+
+  const resetForm = () => {
+    setFormData({
+      ...DEFAULT_FORM_STATE,
+      // Initialize with logged-in user as first participant
+      participants: user ? [{ name: user.name, email: user.email }] : [],
+      paidById: user?.id || ""
+    });
+    setErrors([]);
+    setActiveTab("details");
+  };
+
+  const handleClose = () => {
+    resetForm();
+    onClose();
+  };
 
   useEffect(() => {
     // Initialize with logged-in user as first participant
@@ -34,18 +61,6 @@ export function CreateSplitBox({ isOpen, onClose }) {
       }));
     }
 
-    // Fetch friends list for autocomplete
-    // const fetchFriends = async () => {
-    //   try {
-    //     const response = await axios.get("http://127.0.0.1:8787/friends", {
-    //       headers: { Authorization: `Bearer ${token}` }
-    //     });
-    //     setFriends(response.data);
-    //   } catch (error) {
-    //     console.error("Error fetching friends:", error);
-    //   }
-    // };
-    // fetchFriends();
   }, [token, user]);
 
   const handleChange = (e) => {
@@ -217,13 +232,14 @@ export function CreateSplitBox({ isOpen, onClose }) {
 
   const splitPreview = calculateSplitPreview();
 
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold">Create a New Split</h2>
-            <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+            <button onClick={handleClose} className="text-gray-500 hover:text-gray-700">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
               </svg>

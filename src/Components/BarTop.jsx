@@ -11,8 +11,8 @@ export function BarTop({ friends}) {
 
   useEffect(() => {
     if (!token) {
-      toast.error('No token found! Redirecting to login.');
-      navigate('/login');
+      toast.error('No token found! Redirecting to signin.');
+      navigate('/signin');
     }
   }, [navigate, token]);
 
@@ -30,8 +30,8 @@ export function BarTop({ friends}) {
 
   return (
     <div className="w-full fixed z-60 bg-customBg h-16 top-0">
-      <div className="ml-96 flex items-center justify-between h-full px-4 border border-black">
-        <div className="ml-24 flex gap-8 border border-black mt-4">
+      <div className="ml-96 flex items-center justify-between h-full px-4 ">
+        <div className="ml-24 flex gap-8  mt-4">
           <div className="mx-10">
           <Link to="/dashboard">
               <p className="font-mono font-normal text-2xl text-white cursor-pointer">
@@ -55,7 +55,7 @@ export function BarTop({ friends}) {
           </div>
         </div>
 
-        <div className="border border-black cursor-pointer" onClick={handleFriends}>
+        <div className=" cursor-pointer" onClick={handleFriends}>
           {/* Displaying friends using AvatarGroup */}
           <AvatarGroup max={4}>
             {Array.isArray(friends) && friends.length > 0 ? (

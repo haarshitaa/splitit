@@ -1,6 +1,7 @@
 import './App.css';
 import { HashRouter, Routes, Route } from 'react-router-dom';
-import { Layout } from './Components/layout';
+// import { Layout } from './Components/layout';
+import { Layout } from './Components/Layout';
 import { Home } from './Pages/Home';
 
 import { SignIn } from './Pages/SignIn';
