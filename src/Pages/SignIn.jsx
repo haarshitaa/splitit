@@ -147,7 +147,7 @@
 //     );
 // }
 
-
+//make changes in ui by yourself
 import { useNavigate } from "react-router-dom";
 import Typography from '@mui/material/Typography';
 import React, { useState, useEffect } from 'react';
@@ -313,7 +313,7 @@ export function SignIn() {
                 <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
                     <CurrencyExchangeIcon sx={{ fontSize: 60, color: 'primary.main', transform: 'rotate(20deg)' }} />
                 </Box>
-                
+                //
                 <Typography
                     component="h1"
                     variant="h4"
