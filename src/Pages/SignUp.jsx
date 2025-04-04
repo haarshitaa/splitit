@@ -185,6 +185,8 @@ import { Bottom } from "../Components/bottom";
 import { useSpring, animated } from '@react-spring/web';
 import { Paper, Divider } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { SignUpBox } from "../Components/SignUpBox";
+import { OtpBox } from "../Components/OtpBox";
 
 // Updated FloatingBills component
 // Updated FloatingBills component with better origin distribution
@@ -266,6 +268,7 @@ export function SignUp() {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [showsignup, setShowsignup] = useState(false);
 
     // Animation for the form container
     const formAnimation = useSpring({
@@ -280,12 +283,12 @@ export function SignUp() {
         event.preventDefault();
     };
 
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            navigate("/dashboard");
-        }
-    }, [navigate]);
+    // useEffect(() => {
+    //     const token = localStorage.getItem("token");
+    //     if (token) {
+    //         navigate("/dashboard");
+    //     }
+    // }, [navigate]);
 
     const handleSubmit = async () => {
         if (name === "" || email === "" || password === "") {
@@ -302,8 +305,8 @@ export function SignUp() {
                 password
             });
     
-            localStorage.setItem("token", response.data.token);
-            navigate('/dashboard');
+            // localStorage.setItem("token", response.data.token);
+            // navigate('/dashboard');
     
         } catch (err) {
             console.error("Error during signup:", err);
@@ -316,6 +319,7 @@ export function SignUp() {
     
         } finally {
             setLoading(false);
+            setShowsignup(true);
         }
     };
     
@@ -335,147 +339,23 @@ export function SignUp() {
           <FloatingBills count={8} />
 
           <animated.div style={formAnimation}>
-            <Paper elevation={6} sx={{
-              p: 4,
-              borderRadius: 4,
-              width: { xs: '90vw', sm: '400px' },
-              backdropFilter: 'blur(8px)',
-              backgroundColor: 'rgba(255, 255, 255, 0.85)',
-              boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
-              border: '1px solid rgba(255, 255, 255, 0.18)',
-              position: 'relative',
-              overflow: 'hidden',
-              '&:before': {
-                content: '""',
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                height: '4px',
-                background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`
-              }
-            }}>
-              <Typography
-                component="h1"
-                variant="h4"
-                sx={{ 
-                  width: '100%', 
-                  fontSize: 'clamp(2rem, 10vw, 2.15rem)',
-                  fontWeight: 700,
-                  textAlign: 'center',
-                  mb: 3,
-                  color: theme.palette.primary.main,
-                  background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent'
-                }}
-              >
-                Join SplitIt
-              </Typography>
-              <Typography variant="body2" color="text.secondary" textAlign="center" mb={3}>
-                Start splitting expenses with friends effortlessly
-              </Typography>
-              
-              <Divider sx={{ mb: 3 }} />
+            {showsignup ? <OtpBox/>:
+            <SignUpBox
+                email={email}
+                setEmail={setEmail}
+                name={name}
+                setName={setName}
+                password={password}
+                setPassword={setPassword}
+                showPassword={showPassword}
+                setShowPassword={setShowPassword}
+                handleClickShowPassword={handleClickShowPassword}
+                handleMouseDownPassword={handleMouseDownPassword}
+                handleSubmit={handleSubmit}
+                loading={loading}
+                error={error}
 
-              {/* error alert */}
-              {error && (
-                  <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
-              )}
-
-              {/* username email password */}
-              <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: 2 }}>
-                  <MailIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
-                  <TextField
-                      id="email"
-                      label="Email"
-                      variant="standard"
-                      fullWidth
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                  />
-              </Box>
-
-              <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: 2 }}>
-                  <AccountCircle sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
-                  <TextField
-                      id="username"
-                      label="Username"
-                      variant="standard"
-                      fullWidth
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                  />
-              </Box>
-
-              <FormControl sx={{ m: 1, width: '100%' }} variant="standard">
-                  <InputLabel htmlFor="password">Password</InputLabel>
-                  <Input
-                      id="password"
-                      type={showPassword ? 'text' : 'password'}
-                      endAdornment={
-                          <InputAdornment position="end">
-                              <IconButton
-                                  aria-label="toggle password visibility"
-                                  onClick={handleClickShowPassword}
-                                  onMouseDown={handleMouseDownPassword}
-                              >
-                                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                              </IconButton>
-                          </InputAdornment>
-                      }
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                  />
-              </FormControl>
-
-              {/* submit button */}
-              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-                {loading ? (
-                    <LoadingButton 
-                      loading 
-                      variant="contained" 
-                      size="large"
-                      sx={{
-                        width: '100%',
-                        borderRadius: 2,
-                        py: 1.5,
-                        background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                        '&:hover': {
-                          transform: 'translateY(-2px)',
-                          boxShadow: `0 4px 20px 0 ${theme.palette.primary.main}40`
-                        },
-                        transition: 'all 0.3s ease'
-                      }}
-                    >
-                      Creating Account...
-                    </LoadingButton>
-                ) : (
-                    <Button
-                        variant="contained"
-                        onClick={handleSubmit}
-                        size="large"
-                        sx={{
-                          width: '100%',
-                          borderRadius: 2,
-                          py: 1.5,
-                          background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                          '&:hover': {
-                            transform: 'translateY(-2px)',
-                            boxShadow: `0 4px 20px 0 ${theme.palette.primary.main}40`
-                          },
-                          transition: 'all 0.3s ease'
-                        }}
-                    >
-                      Sign Up
-                    </Button>
-                )}
-              </Box>
-
-              <Box sx={{ mt: 3 }}>
-                <Bottom warning={"Already have an account?"} buttonText={"Sign in"} to={"/signin"} />
-              </Box>
-            </Paper>
+            />}
           </animated.div>
         </Box>
     );
