@@ -420,6 +420,16 @@ export function SignUpBox({
 
       {step === "confirm" && (
         <>
+          <Paper elevation={6} sx={{
+          p: 4, borderRadius: 4, width: { xs: '90vw', sm: '400px' },
+          backdropFilter: 'blur(8px)', backgroundColor: 'rgba(255, 255, 255, 0.85)',
+          position: 'relative', overflow: 'hidden',
+          '&:before': {
+            content: '""',
+            position: 'absolute', top: 0, left: 0, right: 0, height: '4px',
+            background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`
+          }
+        }}>
           <TextField label="Email" fullWidth value={email} disabled variant="standard" sx={{ mb: 2 }} />
           <TextField label="Username" fullWidth value={name} disabled variant="standard" sx={{ mb: 2 }} />
           <FormControl variant="standard" fullWidth>
@@ -428,16 +438,31 @@ export function SignUpBox({
           </FormControl>
 
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
-            <Button variant="outlined" onClick={() => setStep("form")}>⬅️</Button>
+            <Button variant="outlined" onClick={() => setStep("form")}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+              </svg>
+            </Button>
             <LoadingButton loading={loading} variant="contained" onClick={handleSendOtp}>
-              ➡️ Send OTP
+               Send OTP
             </LoadingButton>
           </Box>
+          </Paper>
         </>
       )}
 
       {step === "otp" && (
         <>
+        <Paper elevation={6} sx={{
+          p: 4, borderRadius: 4, width: { xs: '90vw', sm: '400px' },
+          backdropFilter: 'blur(8px)', backgroundColor: 'rgba(255, 255, 255, 0.85)',
+          position: 'relative', overflow: 'hidden',
+          '&:before': {
+            content: '""',
+            position: 'absolute', top: 0, left: 0, right: 0, height: '4px',
+            background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`
+          }
+        }}>
           <Typography variant="body1" mb={2}>Enter the OTP sent to <b>{email}</b></Typography>
           <TextField
             label="OTP" fullWidth variant="standard"
@@ -450,6 +475,7 @@ export function SignUpBox({
               Verify
             </LoadingButton>
           </Box>
+          </Paper>
         </>
       )}
     </>

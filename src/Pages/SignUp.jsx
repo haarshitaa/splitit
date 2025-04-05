@@ -285,12 +285,12 @@ export function SignUp() {
         event.preventDefault();
     };
 
-    // useEffect(() => {
-    //     const token = localStorage.getItem("token");
-    //     if (token) {
-    //         navigate("/dashboard");
-    //     }
-    // }, [navigate]);
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            navigate("/dashboard");
+        }
+    }, [navigate]);
 
     const handleSubmit = async () => {
       if (!name || !email || !password) {
@@ -350,6 +350,8 @@ export function SignUp() {
       alert("Account created successfully!");
       setError("");
       // Redirect or reset state
+      localStorage.setItem("token", response.data.token);
+       navigate('/dashboard');
     } catch (err) {
       setError(err.message);
     } finally {
