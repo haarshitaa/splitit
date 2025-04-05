@@ -300,7 +300,9 @@ export function SignUp() {
     
       setLoading(true);
       try {
-        await axios.post("http://127.0.0.1:8787/signup", { email, name, password });
+        const res = await axios.post("http://127.0.0.1:8787/signup", { email, name, password });
+        console.log(res.data.token);
+        localStorage.setItem("token", res.data.token);
         setStep("confirm"); 
       } catch (err) {
         setError(err?.response?.data?.message || "An error occurred during signup.");
@@ -350,7 +352,6 @@ export function SignUp() {
       alert("Account created successfully!");
       setError("");
       // Redirect or reset state
-      localStorage.setItem("token", response.data.token);
        navigate('/dashboard');
     } catch (err) {
       setError(err.message);
