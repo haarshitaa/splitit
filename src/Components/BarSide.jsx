@@ -1,41 +1,45 @@
 import BookIcon from "@mui/icons-material/MenuBook";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { Link, useLocation } from "react-router-dom";
-import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
+import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import Tooltip from '@mui/material/Tooltip';
 
 const sidebarItems = [
   { label: "Articles", icon: <BookIcon />, to: "/articles" },
   { label: "Settings", icon: <SettingsIcon />, to: "/setting" },
 ];
 
-
-{/* <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
-                    <CurrencyExchangeIcon sx={{ fontSize: 60, color: 'primary.main', transform: 'rotate(20deg)' }} />
-                </Box> */}
-
 function SidebarItem({ label, icon, to }) {
   const location = useLocation();
   const isActive = location.pathname === to;
 
   return (
-    <li>
+    <motion.li whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
       <Link
         to={to}
         className={`flex flex-col items-center justify-center w-14 h-20 mx-auto 
                     ${isActive ? "bg-white rounded-full" : "bg-transparent"}`}
       >
-        <span className="text-3xl text-gray-900 dark:text-white">{icon}</span>
-        <span className="text-sm text-gray-700 dark:text-gray-300 mt-1">
-          {label}
-        </span>
+        <span className="text-3xl text-white">{icon}</span>
+        <span className="text-sm text-gray-200 mt-1">{label}</span>
       </Link>
-    </li>
+    </motion.li>
   );
 }
 
 export function BarSide({ user }) {
-  console.log("from bar", user);
+  const navigate = useNavigate();
+
+  const handleProfile = () => {
+    navigate("/profile");
+  };
+
+  const handleLogo = () => {
+    navigate("/dashboard");
+  }
+
   const getInitial = (name) => (name ? name[0].toUpperCase() : "?");
 
   return (
@@ -46,44 +50,72 @@ export function BarSide({ user }) {
     >
       <div className="h-full px-3 py-4 overflow-y-auto bg-customBg">
         {/* Logo */}
-        <div className="ml-3">
-        <CurrencyExchangeIcon sx={{ fontSize: 60, color: 'white', transform: 'rotate(20deg)' }} />
-        </div>
+        <motion.div
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          className="ml-3"
+          onClick={handleLogo}
+        >
+          <CurrencyExchangeIcon
+            sx={{
+              fontSize: 60,
+              color: "white",
+              transform: "rotate(20deg)",
+            }}
+          />
+
+        </motion.div>
 
         {/* Sidebar Navigation */}
-        <ul className="space-y-6">
+        <div className="mt-16">
+        <ul className="space-y-6 ">
           {sidebarItems.map((item) => (
             <SidebarItem key={item.label} {...item} />
           ))}
         </ul>
+        </div>
 
         {/* Logout */}
-        <ul className="pt-4 mt-auto space-y-6 border-t border-gray-200">
-          <li className="flex flex-col items-center justify-center w-14 h-20 mx-auto">
-            <Link
-              to="/signin"
-              onClick={() => {
-                localStorage.removeItem("token");
-                localStorage.removeItem("user");
-              }}
-            >
-              <span className="text-3xl text-gray-900 dark:text-white">
-                <LogoutIcon />
-              </span>
-              <span className="text-sm text-gray-700 dark:text-gray-300 mt-1">
-                Logout
-              </span>
-            </Link>
-          </li>
-        </ul>
+        
 
-        {/* User Avatar */}
-        <div className="flex flex-col items-center mt-10">
-          <div className="border rounded-full h-16 w-16 mx-auto mt-28 flex items-center justify-center bg-gray-300">
-            <span className="text-3xl text-white">{getInitial(user)}</span>
-          </div>
-        </div>
+        
+
+        {/* User Avatar with animation */}
+        <Tooltip title="Profile">
+        <motion.div
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          className="border rounded-full h-16 w-16 mx-auto mt-44 flex items-center justify-center bg-gray-300 cursor-pointer"
+          onClick={handleProfile}
+        >
+          
+          <span className="text-3xl text-white">{getInitial(user)}</span>
+          
+        </motion.div>
+        </Tooltip>
+        <div className="mt-6">
+  <ul className="p-3 mt-auto space-y-6 border-t border-gray-200">
+    <motion.li
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.95 }}
+      className="flex flex-col items-center justify-center w-14 h-20 mx-auto"
+    >
+      <Link
+        to="/signin"
+        onClick={() => {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+        }}
+        className="flex flex-col items-center text-center"
+      >
+        <LogoutIcon className="text-white text-3xl" />
+        <span className="text-sm text-gray-200 mt-1">Logout</span>
+      </Link>
+    </motion.li>
+  </ul>
+</div>
       </div>
     </aside>
   );
 }
+

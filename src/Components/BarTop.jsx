@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';  
 import { toast } from 'react-toastify';  
 import { Friends } from '../Pages/Friends';
+import { motion } from "framer-motion";
+import Tooltip from '@mui/material/Tooltip';
 
 export function BarTop({ friends}) {  
   const navigate = useNavigate();
@@ -32,30 +34,48 @@ export function BarTop({ friends}) {
     <div className="w-full fixed z-60 bg-customBg h-16 top-0">
       <div className="ml-96 flex items-center justify-between h-full px-4 ">
         <div className="ml-24 flex gap-8  mt-4">
-          <div className="mx-10">
+        <motion.div
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          className="mx-10"
+        >
           <Link to="/dashboard">
               <p className="font-mono font-normal text-2xl text-white cursor-pointer">
                 DASHBOARD
               </p>
             </Link>
-          </div>
-          <div className="mx-10">
+        </motion.div>
+        <motion.div
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          className="mx-10"
+        >
             <Link to="/history">
               <p className="font-mono font-normal text-2xl text-white cursor-pointer">
                 HISTORY
               </p>
             </Link>
-          </div>
-          <div className="mx-10">
+            </motion.div>
+            <motion.div
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          className="mx-10"
+        >
           <Link to="/groups">
               <p className="font-mono font-normal text-2xl text-white cursor-pointer">
                 GROUPS
               </p>
             </Link>
-          </div>
+            </motion.div>
         </div>
 
-        <div className=" cursor-pointer" onClick={handleFriends}>
+        <motion.div
+whileHover={{ scale: 1.1 }}
+whileTap={{ scale: 0.95 }}
+className="cursor-pointer mr-6"
+onClick={handleFriends}
+>
+          <Tooltip title="Friends">
           {/* Displaying friends using AvatarGroup */}
           <AvatarGroup max={4}>
             {Array.isArray(friends) && friends.length > 0 ? (
@@ -66,9 +86,12 @@ export function BarTop({ friends}) {
               <p className="text-white text-sm">No friends</p> 
             )}
           </AvatarGroup>
-        </div>
+          </Tooltip>
+          </motion.div>
       </div>
     </div>
   );
 }
 
+
+{/* <span className="text-3xl text-white">{getInitial(user)}</span> */}

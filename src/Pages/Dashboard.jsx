@@ -1,43 +1,17 @@
-// if anything goes wrong commmmmmmmmmmmmmmmmmmeeeeeeeeee too meeee
-// import { useEffect, useState,useMemo } from 'react';
-// import axios from 'axios';
-// import { toast } from 'react-toastify';
-// import { Layout } from '../Components/layout';
-// import { DashCom } from '../Components/DashCom';
-// import { useNavigate } from "react-router-dom";
-
-
-// export function Dashboard({name, isloading1}) {
-//     const navigate = useNavigate();
-//     const [friends, setFriends] = useState([]);
-//     const [user, setUser] = useState({ name: "Guest" }); 
-//     const [token, setToken] = useState(localStorage.getItem("token"));
-
-//     useEffect(() => {
-//         if (!token) {
-//             console.log("navigating to /signin");
-//             navigate("/signin");
-//             return;
-//         }
-
-
-
-//     }, [token, navigate]);
-
-//     return (
-//         // <Layout user={user}>
-//             <DashCom user={name} isloading1 = {isloading1}/>
-//         //  </Layout> 
-//     );
-// }
-
-
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
-import React from "react";
+import { Link } from 'react-router-dom';
 import { CreateSplitBox } from "../Components/CreateSplitBox";
+import * as React from 'react';
+import BottomNavigation from '@mui/material/BottomNavigation';
+import BottomNavigationAction from '@mui/material/BottomNavigationAction';
+import PaymentsIcon from '@mui/icons-material/Payments';
+import AutoGraphIcon from '@mui/icons-material/AutoGraph';
+import SavingsIcon from '@mui/icons-material/Savings';
+
+
 
 export function Dashboard({ name, isloading1,friends }) {
     const navigate = useNavigate();
@@ -45,7 +19,7 @@ export function Dashboard({ name, isloading1,friends }) {
     const [summary, setSummary] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isCreateSplitOpen, setIsCreateSplitOpen] = useState(false);
-    const [activeTab, setActiveTab] = useState('balances');
+    const [value, setValue] = React.useState('recents');
     const token = localStorage.getItem("token");
 
     useEffect(() => {
@@ -61,7 +35,7 @@ export function Dashboard({ name, isloading1,friends }) {
                 const response = await axios.get('https://splititb.harshitacodes.workers.dev/balances', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                
+                console.log("from dashboard",response.data);
                 setBalances(response.data.data.balances);
                 setSummary(response.data.data.summary);
             } catch (error) {
@@ -136,32 +110,6 @@ export function Dashboard({ name, isloading1,friends }) {
         );
     };
 
-    const RecentActivity = ({ loading }) => {
-        return (
-            <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-                <div className="px-6 py-5 border-b border-gray-200 sm:px-6">
-                    <h3 className="text-lg leading-6 font-medium text-gray-900">Recent Activity</h3>
-                </div>
-                {loading ? (
-                    <div className="p-6">
-                        {Array.from({ length: 3 }).map((_, i) => (
-                            <div key={i} className="animate-pulse flex space-x-4 mb-4">
-                                <div className="rounded-full bg-gray-200 h-10 w-10"></div>
-                                <div className="flex-1 space-y-2 py-1">
-                                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="px-6 py-4 text-center text-gray-500">
-                        <p>No recent activity to display</p>
-                    </div>
-                )}
-            </div>
-        );
-    };
     const handleCreateSplitClick = () => {
         setIsCreateSplitOpen(true);
       };
@@ -169,12 +117,15 @@ export function Dashboard({ name, isloading1,friends }) {
       const handleCloseCreateSplit = () => {
         setIsCreateSplitOpen(false);
       };
+      const handleChange = (event, newValue) => {
+        setValue(newValue);
+      };
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Header */}
             <header className="bg-white shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-between items-center">
-                    <h1 className="text-2xl font-bold text-gray-900">SplitIt Dashboard</h1>
+                    <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
                     <div className="flex items-center space-x-4">
                         <span className="text-gray-600">Hello, {isloading1 ? "..." : name}</span>
                     </div>
@@ -213,22 +164,16 @@ export function Dashboard({ name, isloading1,friends }) {
                 <div className="border-b border-gray-200 mb-6">
                     <nav className="-mb-px flex space-x-8">
                         <button
-                            onClick={() => setActiveTab('balances')}
-                            className={`${activeTab === 'balances' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+        
+                            className="border-blue-500 text-blue-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
                         >
                             Balances
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('activity')}
-                            className={`${activeTab === 'activity' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
-                        >
-                            Recent Activity
                         </button>
                     </nav>
                 </div>
 
                 {/* Tab Content */}
-                {activeTab === 'balances' ? (
+      
                     <div className="bg-white shadow overflow-hidden sm:rounded-lg">
                         <ul className="divide-y divide-gray-200">
                             {loading ? (
@@ -264,10 +209,7 @@ export function Dashboard({ name, isloading1,friends }) {
                             )}
                         </ul>
                     </div>
-                ) : (
-                    <RecentActivity loading={loading} />
-                )}
-
+  
                 {/* Quick Actions */}
                 <div className="mt-8 flex space-x-4">
                     <button
@@ -285,9 +227,49 @@ export function Dashboard({ name, isloading1,friends }) {
                     </button>
                 </div>
             </main>
-        </div>
+            <div className='flex justify-center mt-16 '>
+            <BottomNavigation
+  sx={{
+    width: 700,
+    backgroundColor: '#477082',
+    borderRadius: '0.75rem',
+    '& .MuiBottomNavigationAction-root': {
+      color: 'white', // icon + label color when not selected
+    },
+    '& .Mui-selected': {
+      color: 'white', // icon + label color when selected
+    },
+  }}
+  value={value}
+  onChange={handleChange}
+>
+<BottomNavigationAction
+  label="Personal Expenses"
+  value="Personal Expenses"
+  icon={<PaymentsIcon />}
+  component={Link}
+  to="/expenses"
+/>
+  <BottomNavigationAction
+    label="Expenses Insight"
+    value="Expenses Insight"
+    icon={<AutoGraphIcon />}
+    component={Link}
+    to="/insights"
+  />
+  <BottomNavigationAction
+    label="Savings"
+    value="Savings"
+    icon={<SavingsIcon />}
+    
+  />
+</BottomNavigation>
+
+
+</div>
+
+</div>
     );
 }
-
 
 

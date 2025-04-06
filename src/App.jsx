@@ -13,6 +13,9 @@ import './index.css';
 import { Friends } from './Pages/Friends';
 import { History } from './Pages/History';
 import { Groups } from './Pages/Groups';
+import { Profile } from './Pages/Profile';
+import { Insights } from './Pages/Insights';
+import { Expenses } from './Pages/Expenses';
 
 function App() {
     return (
@@ -29,6 +32,9 @@ function App() {
                 <Route path="/setting" element={<Layout><Setting /></Layout>} />
                 <Route path="/history" element={<Layout><History /></Layout>} />
                 <Route path="/groups" element={<Layout><Groups /></Layout>} />
+                <Route path="/profile" element={<Layout><Profile/></Layout>} />
+                <Route path="/expenses" element={<Layout><Expenses/></Layout>} />
+                <Route path="/insights" element={<Layout><Insights/></Layout>} />
             </Routes>
         </HashRouter>
     );

@@ -12,6 +12,7 @@ export const Layout = memo(({ user, children }) => {
     const [name, setName]  = useState("");
     const [isloading1, setLoading1] = useState(false);
     const [loadfriend, setLoadfriend] = useState(false);
+    const [box, setBox] = useState(false);
 
     useEffect(() => {
         async function fetchUserData() {
@@ -73,7 +74,9 @@ export const Layout = memo(({ user, children }) => {
 
    
     }, [token]);
-    
+    useEffect(() => {
+        console.log("box is now:", box);
+      }, [box]);
 
     if (isloading) {
         return (
@@ -86,11 +89,13 @@ export const Layout = memo(({ user, children }) => {
     }
 
     return (
-        <div className="bg-customBg h-screen w-full relative">
+        <div className="bg-customBg h-screen w-full relative " onClick={(e)=>{e.stopPropagation(); setBox(false)}}>
             <BarTop friends={friends} />
-            <BarSide user={name} isloading1={isloading1} />
+            <BarSide user={name} isloading1={isloading1} box={box} setBox={setBox}  />
             <Body className="pl-[250px] pt-[60px]">
-                {React.cloneElement(children, { name, isloading1,friends, loadfriend })}
+            <div onClick={(e) => e.stopPropagation()}>
+               {React.cloneElement(children, { name, isloading1, friends, loadfriend, box })}
+            </div>
             </Body>
         </div>
     );

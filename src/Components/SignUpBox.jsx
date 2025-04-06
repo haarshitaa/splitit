@@ -8,6 +8,13 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Bottom } from "../Components/bottom";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp"
+
 
 export function SignUpBox({
     theme,
@@ -148,10 +155,18 @@ export function SignUpBox({
           }
         }}>
           <Typography variant="body1" mb={2}>Enter the OTP sent to <b>{email}</b></Typography>
-          <TextField
-            label="OTP" fullWidth variant="standard"
-            value={otp} onChange={(e) => setOtp(e.target.value)}
-          />
+          <InputOTP
+        maxLength={4}
+        value={otp}
+        onChange={(value) => setOtp(value)}
+      >
+        <InputOTPGroup>
+          <InputOTPSlot index={0} />
+          <InputOTPSlot index={1} />
+          <InputOTPSlot index={2} />
+          <InputOTPSlot index={3} />
+        </InputOTPGroup>
+      </InputOTP>
           {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
             <Button variant="outlined" onClick={handleSendOtp}>Resend OTP</Button>
@@ -168,3 +183,25 @@ export function SignUpBox({
 
 
 
+
+
+// import {
+//   InputOTP,
+//   InputOTPGroup,
+//   InputOTPSlot,
+// } from "@/components/ui/input-otp"
+
+// export function InputOTPPattern() {
+//   return (
+//     <InputOTP maxLength={6} pattern={REGEXP_ONLY_DIGITS_AND_CHARS}>
+//       <InputOTPGroup>
+//         <InputOTPSlot index={0} />
+//         <InputOTPSlot index={1} />
+//         <InputOTPSlot index={2} />
+//         <InputOTPSlot index={3} />
+//         <InputOTPSlot index={4} />
+//         <InputOTPSlot index={5} />
+//       </InputOTPGroup>
+//     </InputOTP>
+//   )
+// }
