@@ -227,7 +227,7 @@ export function Dashboard({ name, isloading1,friends }) {
                     </button>
                 </div>
             </main>
-            <div className='flex justify-center mt-16 '>
+            <div className='flex justify-center mt-9 '>
             <BottomNavigation
   sx={{
     width: 700,
