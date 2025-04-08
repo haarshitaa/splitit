@@ -287,7 +287,7 @@ export function SignUp() {
       setLoading(true);
       try {
         const res = await axios.post("https://splititb.harshitacodes.workers.dev/signup", { email, name, password });
-        console.log(res.data.token);
+        // console.log(res.data.token);
         localStorage.setItem("token", res.data.token);
         setStep("confirm"); 
       } catch (err) {

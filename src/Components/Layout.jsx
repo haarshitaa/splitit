@@ -4,6 +4,7 @@ import { Body } from '../Components/Body';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import React, { memo } from "react";
+import { Tombot } from './Tombot';
 
 export const Layout = memo(({ user, children }) => {
     const [friends, setFriends] = useState([]);
@@ -12,7 +13,7 @@ export const Layout = memo(({ user, children }) => {
     const [name, setName]  = useState("");
     const [isloading1, setLoading1] = useState(false);
     const [loadfriend, setLoadfriend] = useState(false);
-    const [box, setBox] = useState(false);
+    const [userinfo,setUserinfo] = useState("");
 
     useEffect(() => {
         async function fetchUserData() {
@@ -30,11 +31,14 @@ export const Layout = memo(({ user, children }) => {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-
-                if (response.data?.name) {
+                // console.log(response.data);
+                
+                if (response.data) {
+                    setUserinfo(response.data);
                     setName(response.data.name);
-                    console.log(response.data.name);
+                    // console.log(response.data.name);
                 }
+                console.log(userinfo);
             } catch (error) {
                 console.error("Error fetching user data:", error);
             } finally {
@@ -74,9 +78,6 @@ export const Layout = memo(({ user, children }) => {
 
    
     }, [token]);
-    useEffect(() => {
-        console.log("box is now:", box);
-      }, [box]);
 
     if (isloading) {
         return (
@@ -89,14 +90,15 @@ export const Layout = memo(({ user, children }) => {
     }
 
     return (
-        <div className="bg-customBg h-screen w-full relative " onClick={(e)=>{e.stopPropagation(); setBox(false)}}>
+        <div className="bg-customBg h-screen w-full relative " >
             <BarTop friends={friends} />
-            <BarSide user={name} isloading1={isloading1} box={box} setBox={setBox}  />
-            <Body className="pl-[250px] pt-[60px]">
-            <div onClick={(e) => e.stopPropagation()}>
-               {React.cloneElement(children, { name, isloading1, friends, loadfriend, box })}
+            <BarSide user={name} isloading1={isloading1}  />
+            <Body className="pl-[250px] pt-[60px] pb-[500px] ">
+            <div >
+               {React.cloneElement(children, { name, isloading1, friends, loadfriend ,userinfo})}
             </div>
             </Body>
+            <Tombot/>
         </div>
     );
 });
