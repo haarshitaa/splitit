@@ -284,6 +284,7 @@ import Calendar from 'react-calendar';
 
 
 
+
 export function Dashboard({ name, isloading1,friends ,userinfo}) {
     const navigate = useNavigate();
     const [isCreateSplitOpen, setIsCreateSplitOpen] = useState(false);
@@ -314,7 +315,36 @@ export function Dashboard({ name, isloading1,friends ,userinfo}) {
                 </div>
             </div>
         </div>
+        <div className='fixed right-9 top-96'>
+            {/* <div className='h-96'> */}
+            <div className='app '>
+                <div className='calendar-container'>
+                    <Calendar onChange={setDate} value={date} />
+                </div>
+            </div>
+            {/* </div> */}
+
+        </div>
         </div>
     );
 }
 
+
+// function App() {
+
+
+//   return (
+//     <div className='app'>
+//       <h1 className='text-center'>React Calendar</h1>
+//       <div className='calendar-container'>
+//         <Calendar onChange={setDate} value={date} />
+//       </div>
+//       <p className='text-center'>
+//         <span className='bold'>Selected Date:</span>{' '}
+//         {date.toDateString()}
+//       </p>
+//     </div>
+//   );
+// }
+
+// export default App;
