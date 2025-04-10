@@ -275,7 +275,6 @@
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
 import { CreateSplitBox } from "../Components/CreateSplitBox";
@@ -289,9 +288,22 @@ export function Dashboard({ name, isloading1,friends ,userinfo}) {
     const navigate = useNavigate();
     const [isCreateSplitOpen, setIsCreateSplitOpen] = useState(false);
     const [date, setDate] = useState(new Date());
-
-
+    const[isOpen, setisOpen] = useState(false);
     const token = localStorage.getItem("token");
+
+    useEffect(()=>{
+        if(!token){
+            navigate("/signin");
+            return;
+        }
+    },[token]);
+
+    const handleCreateSplitClick =  () => {
+        setIsCreateSplitOpen(true);
+    }
+    const handleCloseCreateSplit = ()=>{
+        setIsCreateSplitOpen(false);
+    }
 
     useEffect(() => {
         if (!token) {
@@ -307,7 +319,7 @@ export function Dashboard({ name, isloading1,friends ,userinfo}) {
             </div>
 
             <div className='flex flex-col gap-4'>
-                <div className='border border-black  h-20 w-48 flex justify-center items-center rounded-3xl'>
+                <div className='border border-black  h-20 w-48 flex justify-center items-center rounded-3xl 'onClick={showbox} >
                     Create Split
                 </div>
                 <div className='border border-black  h-20 w-48 flex justify-center items-center rounded-3xl'>
@@ -325,26 +337,12 @@ export function Dashboard({ name, isloading1,friends ,userinfo}) {
             {/* </div> */}
 
         </div>
+        <div>
+            {/* splits display */} 
+        </div>
         </div>
     );
 }
 
-
-// function App() {
-
-
-//   return (
-//     <div className='app'>
-//       <h1 className='text-center'>React Calendar</h1>
-//       <div className='calendar-container'>
-//         <Calendar onChange={setDate} value={date} />
-//       </div>
-//       <p className='text-center'>
-//         <span className='bold'>Selected Date:</span>{' '}
-//         {date.toDateString()}
-//       </p>
-//     </div>
-//   );
-// }
-
-// export default App;
+{showbox&&
+<CreateSplitBox isOpen={isOpen} onClose={onClose} friends userinfo/>}
