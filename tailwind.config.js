@@ -24,8 +24,10 @@ export default {
   theme: {
   	extend: {
   		colors: {
-  			customBg: '#2575F8',
-			  customBgLight: '#facc15',
+  			customBg: '#f8a825',
+			customBgLight: '#facc15',
+			profileclr:'#a86a2b',
+			bground:'#fff5e9',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {

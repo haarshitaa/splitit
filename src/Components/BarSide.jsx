@@ -48,7 +48,7 @@ export function BarSide({ user }) {
       className="fixed left-0 z-60 w-28 h-screen transition-transform translate-x-0 top-0"
       aria-label="Sidebar"
     >
-      <div className="h-full px-3 py-4 overflow-y-auto bg-gradient-to-r from-customBg to-customBgLight">
+      <div className="h-full px-3 py-4 overflow-y-auto customBg">
         {/* Logo */}
         <motion.div
           whileHover={{ scale: 1.1 }}
@@ -85,7 +85,7 @@ export function BarSide({ user }) {
         <motion.div
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
-          className="border rounded-full h-16 w-16 mx-auto mt-44 flex items-center justify-center bg-gray-300 cursor-pointer"
+          className="border rounded-full h-16 w-16 mx-auto mt-44 flex items-center justify-center bg-profileclr cursor-pointer border-profileclr"
           onClick={handleProfile}
         >
           

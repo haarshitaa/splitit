@@ -71,24 +71,44 @@ export function BarTop({ friends}) {
         </div>
 
         <motion.div
-whileHover={{ scale: 1.1 }}
-whileTap={{ scale: 0.95 }}
-className="cursor-pointer mr-6"
-onClick={handleFriends}
+  whileHover={{ scale: 1.1 }}
+  whileTap={{ scale: 0.95 }}
+  className="cursor-pointer mr-6"
+  onClick={handleFriends}
 >
-          <Tooltip title="Friends">
-          {/* Displaying friends using AvatarGroup */}
-          <AvatarGroup max={4}>
-            {Array.isArray(friends) && friends.length > 0 ? (
-              friends.map((friend) => (
-                <Avatar key={friend.id}>{getInitials(friend.name)}</Avatar>
-              ))
-            ) : (
-              <p className="text-white text-sm">No friends</p> 
-            )}
-          </AvatarGroup>
-          </Tooltip>
-          </motion.div>
+  <Tooltip title="Friends">
+    <AvatarGroup max={4}>
+      {Array.isArray(friends) && friends.length > 0 ? (
+        friends.map((friend) => (
+          <Avatar 
+            key={friend.id}
+            className="bg-profileclr border-profileclr"
+            sx={{
+              backgroundColor: 'var(--profileclr)', // Fallback
+              borderColor: 'var(--border-profileclr)', // Fallback
+              borderWidth: 2,
+              borderStyle: 'solid'
+            }}
+          >
+            {getInitials(friend.name)}
+          </Avatar>
+        ))
+      ) : (
+        <Avatar 
+          className="bg-profileclr border-profileclr"
+          sx={{
+            backgroundColor: 'var(--profileclr)',
+            borderColor: 'var(--border-profileclr)',
+            borderWidth: 2,
+            borderStyle: 'solid'
+          }}
+        >
+          ?
+        </Avatar>
+      )}
+    </AvatarGroup>
+  </Tooltip>
+</motion.div>
       </div>
     </div>
   );
