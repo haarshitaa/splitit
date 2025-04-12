@@ -24,7 +24,8 @@ export default {
   theme: {
   	extend: {
   		colors: {
-  			customBg: '#477082',
+  			customBg: '#2575F8',
+			  customBgLight: '#facc15',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
@@ -79,3 +80,6 @@ export default {
   },
   plugins: [require("tailwindcss-animate")],
 }
+
+
+// customBg: '#477082',

@@ -31,7 +31,8 @@ export function BarTop({ friends}) {
   };
 
   return (
-    <div className="w-full fixed z-60 bg-customBg h-16 top-0">
+
+    <div className="w-full fixed z-60 bg-gradient-to-r from-customBg to-customBgLight h-16 top-0">
       <div className="ml-96 flex items-center justify-between h-full px-4 ">
         <div className="ml-24 flex gap-8  mt-4">
         <motion.div

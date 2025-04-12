@@ -90,7 +90,10 @@ export const Layout = memo(({ user, children }) => {
     }
 
     return (
-        <div className="bg-customBg h-screen w-full relative " >
+        <div className="bg-gradient-to-r from-customBg to-customBgLight h-screen w-full relative " >
+
+
+
             <BarTop friends={friends} />
             <BarSide user={name} isloading1={isloading1}  />
             <Body className="pl-[250px] pt-[60px] pb-[500px] ">
@@ -102,4 +105,6 @@ export const Layout = memo(({ user, children }) => {
         </div>
     );
 });
+
+
 

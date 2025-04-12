@@ -1,15 +1,15 @@
 // import { useEffect, useState } from 'react';
 // import axios from 'axios';
-// import { toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 // import { useNavigate } from "react-router-dom";
-// import { Link } from 'react-router-dom';
-// import { CreateSplitBox } from "../Components/CreateSplitBox";
-// import * as React from 'react';
-// import BottomNavigation from '@mui/material/BottomNavigation';
-// import BottomNavigationAction from '@mui/material/BottomNavigationAction';
-// import PaymentsIcon from '@mui/icons-material/Payments';
-// import AutoGraphIcon from '@mui/icons-material/AutoGraph';
-// import SavingsIcon from '@mui/icons-material/Savings';
+import { Link } from 'react-router-dom';
+import { CreateSplitBox } from "../Components/CreateSplitBox";
+import * as React from 'react';
+import BottomNavigation from '@mui/material/BottomNavigation';
+import BottomNavigationAction from '@mui/material/BottomNavigationAction';
+import PaymentsIcon from '@mui/icons-material/Payments';
+import AutoGraphIcon from '@mui/icons-material/AutoGraph';
+import SavingsIcon from '@mui/icons-material/Savings';
 
 
 
@@ -273,76 +273,335 @@
 // }
 
 
+
+
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
-import { Link } from 'react-router-dom';
-import { CreateSplitBox } from "../Components/CreateSplitBox";
-import * as React from 'react';
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  ExpandMore, 
+  ExpandLess, 
+  Add, 
+  Payment, 
+  Person, 
+  ArrowUpward, 
+  ArrowDownward,
+  AccountCircle
+} from '@mui/icons-material';
+// import 'react-calendar/dist/Calendar.css';
+import { useSpring, animated } from '@react-spring/web';
 import Calendar from 'react-calendar';
 
-
-
-
-export function Dashboard({ name, isloading1,friends ,userinfo}) {
+export function Dashboard({ name, isloading1, friends, userinfo }) {
     const navigate = useNavigate();
     const [isCreateSplitOpen, setIsCreateSplitOpen] = useState(false);
     const [date, setDate] = useState(new Date());
-    const[isOpen, setisOpen] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(false);
+    const [showGreeting, setShowGreeting] = useState(true);
     const token = localStorage.getItem("token");
-
-    useEffect(()=>{
-        if(!token){
-            navigate("/signin");
-            return;
-        }
-    },[token]);
-
-    const handleCreateSplitClick =  () => {
-        setIsCreateSplitOpen(true);
-    }
-    const handleCloseCreateSplit = ()=>{
-        setIsCreateSplitOpen(false);
-    }
+    const [loading, setLoading] = useState(true);
+    const [balances, setBalances] = useState([]);
+    const [summary, setSummary] = useState(null);
 
     useEffect(() => {
         if (!token) {
             navigate("/signin");
             return;
-        }});
+        }
+        
+        const fetchBalances = async () => {
+            try {
+                setLoading(true);
+                const response = await axios.get('http://127.0.0.1:8787/balances', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setBalances(response.data.data.balances);
+                setSummary(response.data.data.summary);
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        
+        fetchBalances();
+        
+        // Hide greeting after 3 seconds
+        const timer = setTimeout(() => {
+            setShowGreeting(false);
+        }, 4000);
+        
+        return () => clearTimeout(timer);
+    }, [token, navigate]);
+
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('en-IN', {
+            style: 'currency',
+            currency: 'INR',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(amount);
+    };
+
+    // Animation for greeting disappearance
+    const greetingAnimation = useSpring({
+        height: showGreeting ? 144 : 0,
+        opacity: showGreeting ? 1 : 0,
+        marginBottom: showGreeting ? 24 : 0,
+        config: { tension: 200, friction: 30 }
+    });
+
+    const BalanceCard = ({ name, email, amount, type, formattedAmount, updatedOn }) => {
+        return (
+            <motion.li 
+                className='px-6 py-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow'
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+            >
+                <div className='flex items-center justify-between'>
+                    <div className='flex items-center space-x-4'>
+                        <div className='flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center'>
+                            <span className='text-blue-600 font-medium'>
+                                {name.charAt(0).toUpperCase()}
+                            </span>
+                        </div>
+                        <div>
+                            <h3 className='text-sm font-medium text-gray-900'>{name}</h3>
+                            <p className="text-sm text-gray-500">{email}</p>
+                        </div>
+                    </div>
+                    <div className={`text-sm font-medium ${type === 'you_owe' ? 'text-red-600' : 'text-green-600'}`}>
+                        <div className="flex items-center">
+                            {type === 'you_owe' ? (
+                                <ArrowDownward className="mr-1" fontSize="small" />
+                            ) : (
+                                <ArrowUpward className="mr-1" fontSize="small" />
+                            )}
+                            {type === 'you_owe' ? 'You owe' : 'Owes you'} {formattedAmount}
+                        </div>
+                        <p className='text-xs text-gray-400 mt-1'>Updated: {new Date(updatedOn).toLocaleDateString()}</p>
+                    </div>
+                </div>
+            </motion.li>
+        );
+    };
+
+    const Cardies = ({ title, amount, type, loading, formattedAmount }) => {
+        const bgColor = {
+            positive: 'bg-emerald-50',
+            negative: 'bg-rose-50',
+            neutral: 'bg-slate-50'
+        }[type];
+    
+        const textColor = {
+            positive: 'text-emerald-700',
+            negative: 'text-rose-700',
+            neutral: 'text-slate-700'
+        }[type];
+    
+        const borderColor = {
+            positive: 'border-emerald-200',
+            negative: 'border-rose-200',
+            neutral: 'border-slate-200'
+        }[type];
+    
+        const icon = {
+            positive: <ArrowUpward className={`text-emerald-600`} />,
+            negative: <ArrowDownward className={`text-rose-600`} />,
+            neutral: <Person className={`text-slate-600`} />
+        }[type];
+    
+        return (
+            <motion.div 
+                className={`${bgColor} ${borderColor} border overflow-hidden shadow-sm rounded-xl p-5 hover:shadow-md transition-all`}
+                whileHover={{ y: -3, scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+            >
+                <h3 className="text-xs font-medium text-slate-500 uppercase tracking-wider">{title}</h3>
+                {loading ? (
+                    <div className='animate-pulse h-8 w-3/4 bg-slate-200 rounded mt-3'></div>
+                ) : (
+                    <div className="flex items-center mt-3">
+                        <div className={`p-2 rounded-lg ${bgColor}`}>
+                            {icon}
+                        </div>
+                        <p className={`ml-3 text-2xl font-semibold ${textColor}`}>
+                            {formattedAmount}
+                        </p>
+                    </div>
+                )}
+            </motion.div>
+        );
+    };
+
+    const handleCreateSplitClick = () => {
+        setIsCreateSplitOpen(true);
+    }
+
+    const handleCloseCreateSplit = () => {
+        setIsCreateSplitOpen(false);
+    }
+
+    const toggleExpand = () => {
+        setIsExpanded(!isExpanded);
+    }
+
     return (
-        <div className='border border-black h-[calc(100vh-7rem)] p-4'> 
-        {/* left */}
-        <div className='flex justify-between'>
-        <div className='w-3/5 h-36 border border-black flex justify-center items-center rounded-3xl' >
-            Hi {`${userinfo?.name}`}  
+        <div className="min-h-[calc(100vh-7rem)] p-4 bg-gray-50">
+            {/* Animated Greeting Section */}
+            <animated.div 
+                style={greetingAnimation}
+                className="w-full overflow-hidden"
+            >
+                <motion.div 
+                    className="w-full h-36 bg-gradient-to-r from-blue-500 to-blue-600 shadow-lg rounded-3xl flex flex-col justify-center items-center text-white"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <AccountCircle sx={{ fontSize: 48 }} />
+                    <h1 className="text-2xl font-semibold mt-2">
+                        Welcome back, {`${userinfo?.name || 'User'}`}!
+                    </h1>
+                    <p className="text-sm opacity-80">Let's manage your expenses</p>
+                </motion.div>
+            </animated.div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col md:flex-row gap-4 mb-6">
+                <motion.button
+                    onClick={handleCreateSplitClick}
+                    className="h-20 bg-white shadow-md rounded-2xl flex justify-center items-center gap-2 px-6 hover:bg-blue-50 transition-colors"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                >
+                    <Add className="text-blue-600" />
+                    <span className="text-gray-700 font-medium">Create Split</span>
+                    <CreateSplitBox isOpen={isCreateSplitOpen} onClose={handleCloseCreateSplit} friends={friends} userinfo={userinfo} />
+                </motion.button>
+
+                <motion.button
+                    className="h-20 bg-white shadow-md rounded-2xl flex justify-center items-center gap-2 px-6 hover:bg-green-50 transition-colors"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                >
+                    <Payment className="text-green-600" />
+                    <span className="text-gray-700 font-medium">Settle Expense</span>
+                </motion.button>
             </div>
 
-            <div className='flex flex-col gap-4'>
-                <div className='border border-black  h-20 w-48 flex justify-center items-center rounded-3xl 'onClick={showbox} >
-                    Create Split
-                </div>
-                <div className='border border-black  h-20 w-48 flex justify-center items-center rounded-3xl'>
-                    Settle Expense
-                </div>
-            </div>
-        </div>
-        <div className='fixed right-9 top-96'>
-            {/* <div className='h-96'> */}
-            <div className='app '>
-                <div className='calendar-container'>
-                    <Calendar onChange={setDate} value={date} />
-                </div>
-            </div>
-            {/* </div> */}
+            {/* Main Content */}
+            <div className="flex flex-col lg:flex-row gap-6">
+                {/* Left Section - Scrollable */}
+                <div className={`${isExpanded ? 'lg:w-full' : 'lg:w-2/3'} transition-all duration-300`}>
+                    <div className="bg-white p-6 rounded-xl shadow-md">
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-xl font-semibold text-gray-800">Your Balance Summary</h2>
+                            <button 
+                                onClick={toggleExpand}
+                                className="text-gray-500 hover:text-gray-700 transition-colors"
+                            >
+                                {isExpanded ? <ExpandLess /> : <ExpandMore />}
+                            </button>
+                        </div>
 
-        </div>
-        <div>
-            {/* splits display */} 
-        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <Cardies
+                                title="You Owe"
+                                amount={summary?.youOwe || 0}
+                                type="negative"
+                                loading={loading}
+                                formattedAmount={formatCurrency(summary?.youOwe || 0)}
+                            />
+
+                            <Cardies
+                                title="You're Owed"
+                                amount={summary?.owesYou || 0}
+                                type="positive"
+                                loading={loading}
+                                formattedAmount={formatCurrency(summary?.owesYou || 0)}
+                            />
+
+                            <Cardies
+                                title="Net Balance"
+                                amount={summary?.netBalance?.amount || 0}
+                                type={summary?.netBalance?.type === 'owes_you' ? 'positive' :
+                                    summary?.netBalance?.type === 'you_owe' ? 'negative' : 'neutral'}
+                                loading={loading}
+                                formattedAmount={formatCurrency(summary?.netBalance?.amount || 0)}
+                            />
+                        </div>
+
+                        <div className="mb-6">
+                            <h3 className="text-lg font-medium text-gray-800 mb-4">Recent Balances</h3>
+                            <div className="overflow-y-auto max-h-96 pr-2">
+                                <ul className="space-y-3">
+                                    <AnimatePresence>
+                                        {loading ? (
+                                            Array.from({ length: 3 }).map((_, index) => (
+                                                <motion.li 
+                                                    key={index}
+                                                    className="px-6 py-4 bg-gray-100 rounded-lg animate-pulse h-20"
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    exit={{ opacity: 0 }}
+                                                />
+                                            ))
+                                        ) : balances.length > 0 ? (
+                                            balances.map((balance, index) => (
+                                                <BalanceCard
+                                                    key={index}
+                                                    name={balance.name}
+                                                    email={balance.email}
+                                                    amount={balance.amount}
+                                                    type={balance.type}
+                                                    formattedAmount={formatCurrency(balance.amount)}
+                                                    updatedOn={balance.updatedOn}
+                                                />
+                                            ))
+                                        ) : (
+                                            <motion.div 
+                                                className="text-center py-8 text-gray-500"
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                            >
+                                                No balance records found
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right Section - Calendar */}
+                {!isExpanded && (
+                    <motion.div 
+                        className="lg:w-1/3"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.2 }}
+                    >
+                        <div className="bg-white p-6 rounded-xl shadow-md sticky top-4">
+                            <h3 className="text-lg font-medium text-gray-800 mb-4">Calendar</h3>
+                            <div className="calendar-container">
+                                <Calendar 
+                                    onChange={setDate} 
+                                    value={date} 
+                                    className="border-0 w-full"
+                                    tileClassName={({ date, view }) => 
+                                        view === 'month' && date.getDay() === 0 ? 'text-red-500' : null
+                                    }
+                                />
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </div>
         </div>
     );
 }
-
-{showbox&&
-<CreateSplitBox isOpen={isOpen} onClose={onClose} friends userinfo/>}

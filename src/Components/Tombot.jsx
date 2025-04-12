@@ -6,7 +6,8 @@ export function Tombot() {
 
 
     return (
-        <div className="fixed w-full h-5 bg-customBg z-70 bottom-0">
+        // <div className="fixed w-full h-5 bg-customBg z-70 bottom-0">
+        <div className="fixed w-full h-5 bg-gradient-to-r from-customBg to-customBgLight z-70 bottom-0">
           
 
         </div>
