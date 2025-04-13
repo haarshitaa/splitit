@@ -561,7 +561,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 export function CreateSplitBox({ isOpen, onClose , friends,userinfo}) {
   const token = localStorage.getItem("token");
 
-
   const DEFAULT_FORM_STATE = {
     description: "",
     image: "https://img.com",
@@ -575,7 +574,6 @@ export function CreateSplitBox({ isOpen, onClose , friends,userinfo}) {
     percentages: [],
     exactAmounts: []
   };
-
 
   const [errors, setErrors] = useState([]);
   const [activeTab, setActiveTab] = useState("details");
@@ -634,16 +632,18 @@ export function CreateSplitBox({ isOpen, onClose , friends,userinfo}) {
   const addParticipant = () => {
     setFormData(prev => ({
       ...prev,
-      participants: [...prev.participants, { name: "", email: "" }]
+      participants: [...prev.participants, { name: "", email: "",id: "" }]
     }));
   };
 
   const removeParticipant = (index) => {
-    // Prevent removing the logged-in user (first participant)
     if (formData.participants.length > 1 && index !== 0) {
+      const newParticipants = formData.participants.filter((_, i) => i !== index);
       setFormData(prev => ({
         ...prev,
-        participants: prev.participants.filter((_, i) => i !== index)
+        participants: newParticipants,
+        // Reset paidById if the removed participant was the payer
+        paidById: prev.paidById === prev.participants[index].id ? userinfo.id : prev.paidById
       }));
     }
   };
@@ -658,9 +658,23 @@ export function CreateSplitBox({ isOpen, onClose , friends,userinfo}) {
     }));
   };
 
+  const handleFriendSelect = (index, e) => {
+    const input = e.target;
+    const option = Array.from(input.list.options).find(
+      opt => opt.value === input.value
+    );
+    if (option) {
+      const friend = friends.find(f => f.name === option.value);
+      if (friend) {
+        handleParticipantChange(index + 1, "name", friend.name);
+        handleParticipantChange(index + 1, "email", friend.email);
+        handleParticipantChange(index + 1, "id", friend.id);
+      }
+    }
+  };
+
   const handleAmountDistributionChange = (index, value) => {
-    const numericValue = Number(value) || 0;
-    
+    const numericValue = Number(value) || 0;    
     if (formData.splitType === "PERCENTAGE") {
       const newPercentages = [...formData.percentages];
       newPercentages[index] = numericValue;
@@ -675,13 +689,10 @@ export function CreateSplitBox({ isOpen, onClose , friends,userinfo}) {
       setFormData(prev => ({ ...prev, exactAmounts: newExactAmounts }));
     }
   };
-
   const calculateSplitPreview = () => {
-    if (!formData.amount || formData.amount <= 0) return [];
-    
+    if (!formData.amount || formData.amount <= 0) return [];    
     const totalParticipants = formData.participants.length;
     let amounts = [];
-
     switch (formData.splitType) {
       case "EQUAL":
         amounts = new Array(totalParticipants).fill(formData.amount / totalParticipants);
@@ -701,47 +712,36 @@ export function CreateSplitBox({ isOpen, onClose , friends,userinfo}) {
       default:
         amounts = new Array(totalParticipants).fill(0);
     }
-
     return amounts;
   };
-
   const validateForm = () => {
-    const newErrors = [];
-    
+    const newErrors = [];    
     if (!formData.description) {
       newErrors.push({ message: "Description is required" });
     }
-    
     if (!formData.amount || formData.amount <= 0) {
       newErrors.push({ message: "Amount must be greater than zero" });
     }
-    
     if (formData.participants.length < 1) {
       newErrors.push({ message: "At least one participant is required" });
     }
-    
-    // Validate emails
     formData.participants.forEach((p, i) => {
       if (!p.email.includes("@")) {
         newErrors.push({ message: `Participant ${i + 1} has an invalid email` });
       }
-    });
-    
-    // Validate split type specific fields
+    });  
     if (formData.splitType === "PERCENTAGE") {
       const total = formData.percentages.reduce((sum, p) => sum + (p || 0), 0);
       if (Math.abs(total - 100) > 0.01) {
         newErrors.push({ message: "Percentages must add up to 100%" });
       }
-    }
-    
+    }    
     if (formData.splitType === "EXACT") {
       const total = formData.exactAmounts.reduce((sum, a) => sum + (a || 0), 0);
       if (Math.abs(total - formData.amount) > 0.01) {
         newErrors.push({ message: "Exact amounts must add up to the total amount" });
       }
-    }
-    
+    }    
     setErrors(newErrors);
     return newErrors.length === 0;
   };
@@ -757,8 +757,11 @@ export function CreateSplitBox({ isOpen, onClose , friends,userinfo}) {
         currency: formData.currency,
         amount: Number(formData.amount),
         note: formData.note || undefined,
-        participants: formData.participants.slice(1), // Exclude logged-in user (will be added by backend)
-        paidById: userinfo.id, // Always use logged-in user as payer
+        participants: formData.participants.slice(1).map(p => ({ 
+          name: p.name, 
+          email: p.email 
+        })),
+        paidById: Number(formData.paidById), // Ensure this is a number
         splitType: formData.splitType,
         shares: formData.splitType === "SHARES" ? formData.shares : undefined,
         percentages: formData.splitType === "PERCENTAGE" ? formData.percentages : undefined,
@@ -780,17 +783,13 @@ export function CreateSplitBox({ isOpen, onClose , friends,userinfo}) {
       } else {
         toast.error("Failed to create split");
       }
-    }
-    finally{
+    } finally {
       setLoading(false);
     }
   };
 
   if (!isOpen) return null;
-
   const splitPreview = calculateSplitPreview();
-
-
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -803,7 +802,6 @@ export function CreateSplitBox({ isOpen, onClose , friends,userinfo}) {
               </svg>
             </button>
           </div>
-
           {errors.length > 0 && (
             <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
               {errors.map((error, i) => (
@@ -826,7 +824,6 @@ export function CreateSplitBox({ isOpen, onClose , friends,userinfo}) {
               Split Options
             </button>
           </div>
-
           {activeTab === "details" ? (
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -840,7 +837,6 @@ export function CreateSplitBox({ isOpen, onClose , friends,userinfo}) {
                     placeholder="Dinner at Italian Restaurant"
                   />
                 </div>
-
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Total Amount*</label>
                   <div className="flex">
@@ -867,23 +863,21 @@ export function CreateSplitBox({ isOpen, onClose , friends,userinfo}) {
                   </div>
                 </div>
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Paid by</label>
-                <select
-                  name="paidById"
-                  value={formData.paidById}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
-                >
-                  {formData.participants.map((p, i) => (
-                    <option key={i} value={i === 0 ? userinfo.id : i}>
-                      {i === 0 ? `You (${userinfo.name})` : (p.name || p.email)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Paid by</label>
+              <select
+                name="paidById"
+                value={formData.paidById}
+                onChange={handleChange}
+                className="w-full p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+              >
+                {formData.participants.map((p, i) => (
+                  <option key={i} value={p.id || i}>
+                    {i === 0 ? `You (${userinfo.name})` : (p.name || p.email)}
+                  </option>
+                ))}
+              </select>
+            </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Note (optional)</label>
                 <textarea
@@ -895,7 +889,6 @@ export function CreateSplitBox({ isOpen, onClose , friends,userinfo}) {
                   rows="2"
                 />
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Participants*</label>
                 <div className="space-y-2">
@@ -919,14 +912,15 @@ export function CreateSplitBox({ isOpen, onClose , friends,userinfo}) {
                   {/* Additional participants */}
                   {formData.participants.slice(1).map((participant, index) => (
                     <div key={index + 1} className="flex space-x-2 items-center">
-                      <input
-                        type="text"
-                        placeholder="Name"
-                        value={participant.name}
-                        onChange={(e) => handleParticipantChange(index + 1, "name", e.target.value)}
-                        className="flex-1 p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
-                        list="friendsList"
-                      />
+                    <input
+                      type="text"
+                      placeholder="Name"
+                      value={participant.name}
+                      onChange={(e) => handleParticipantChange(index + 1, "name", e.target.value)}
+                      onInput={(e) => handleFriendSelect(index, e)}
+                      className="flex-1 p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+                      list="friendsList"
+                    />
                       <input
                         type="email"
                         placeholder="Email"
@@ -998,7 +992,6 @@ export function CreateSplitBox({ isOpen, onClose , friends,userinfo}) {
                   </button>
                 </div>
               </div>
-
               <div className="space-y-4">
                 <h3 className="font-medium">Split Details</h3>
                 <div className="overflow-x-auto">
@@ -1056,7 +1049,6 @@ export function CreateSplitBox({ isOpen, onClose , friends,userinfo}) {
                     </tbody>
                   </table>
                 </div>
-
                 {splitPreview.length > 0 && (
                   <div className="mt-4 p-4 bg-gray-50 rounded-md">
                     <h4 className="font-medium mb-2">Split Preview</h4>
@@ -1077,7 +1069,6 @@ export function CreateSplitBox({ isOpen, onClose , friends,userinfo}) {
               </div>
             </div>
           )}
-
           <div className="mt-6 flex justify-between">
             <button
               onClick={() => activeTab === "split" ? setActiveTab("details") : onClose()}
@@ -1103,8 +1094,6 @@ export function CreateSplitBox({ isOpen, onClose , friends,userinfo}) {
     {loading ? <CircularProgress size="20px" color="inherit" /> : "Create Split"}
   </button>
 )}
-
-
             </div>
           </div>
         </div>

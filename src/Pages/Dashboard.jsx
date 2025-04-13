@@ -675,12 +675,12 @@ export function Dashboard({ name, isloading1, friends, userinfo }) {
         }).format(amount);
     };
 
-    const greetingAnimation = useSpring({
-        height: showGreeting ? 144 : 0,
-        opacity: showGreeting ? 1 : 0,
-        marginBottom: showGreeting ? 24 : 0,
-        config: { tension: 200, friction: 30 }
-    });
+    // const greetingAnimation = useSpring({
+    //     height: showGreeting ? 144 : 0,
+    //     opacity: showGreeting ? 1 : 0,
+    //     marginBottom: showGreeting ? 24 : 0,
+    //     config: { tension: 200, friction: 30 }
+    // });
 
     const BalanceCard = React.memo(({ name, email, amount, type, formattedAmount, updatedOn }) => {
         return (
@@ -783,7 +783,7 @@ export function Dashboard({ name, isloading1, friends, userinfo }) {
     return (
         <div className="min-h-[calc(100vh-7rem)] p-4 bg-gray-50">
             {/* Animated Greeting Section */}
-            <animated.div 
+            {/* <animated.div 
                 style={greetingAnimation}
                 className="w-full overflow-hidden"
             >
@@ -800,7 +800,7 @@ export function Dashboard({ name, isloading1, friends, userinfo }) {
                     </h1>
                     <p className="text-sm opacity-80">Let's manage your expenses</p>
                 </motion.div>
-            </animated.div>
+            </animated.div> */}
 
             {/* Action Buttons */}
             <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -875,7 +875,7 @@ export function Dashboard({ name, isloading1, friends, userinfo }) {
 
                         <div className="mb-6">
                             <h3 className="text-lg font-medium text-gray-800 mb-4">Recent Balances</h3>
-                            <div className="overflow-y-auto max-h-96 pr-2">
+                            <div className="overflow-y-auto max-h-44 pr-2">
                                 <ul className="space-y-3">
                                     <AnimatePresence>
                                         {loading ? (
@@ -917,7 +917,7 @@ export function Dashboard({ name, isloading1, friends, userinfo }) {
                 </div>
 
                 {/* Right Section - Calendar */}
-                {!isExpanded && (
+                {/* {!isExpanded && (
                     <motion.div 
                         className="lg:w-1/3"
                         initial={{ opacity: 0, x: 20 }}
@@ -938,7 +938,7 @@ export function Dashboard({ name, isloading1, friends, userinfo }) {
                             </div>
                         </div>
                     </motion.div>
-                )}
+                )} */}
             </div>
         </div>
     );
