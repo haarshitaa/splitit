@@ -28,6 +28,7 @@ export default {
 			customBgLight: '#facc15',
 			profileclr:'#a86a2b',
 			bground:'#fff5e9',
+			boxclr:'rgba(255,245,233,255)',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {

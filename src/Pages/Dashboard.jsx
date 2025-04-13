@@ -609,7 +609,6 @@
 
 
 import React from "react";
-
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
 import { useSpring, animated } from '@react-spring/web';
@@ -628,8 +627,6 @@ import {
   AccountCircle
 } from '@mui/icons-material';
 
-// Memoized CreateSplitBox
-const MemoizedCreateSplitBox = React.memo(CreateSplitBox);
 
 export function Dashboard({ name, isloading1, friends, userinfo }) {
     const navigate = useNavigate();
@@ -791,7 +788,7 @@ export function Dashboard({ name, isloading1, friends, userinfo }) {
                 className="w-full overflow-hidden"
             >
                 <motion.div 
-                    className="w-full h-36 bg-bground shadow-lg rounded-3xl flex flex-col justify-center items-center text-white"
+                    className="w-full h-36 bg-boxclr shadow-lg rounded-3xl flex flex-col justify-center items-center text-white"
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
@@ -816,7 +813,12 @@ export function Dashboard({ name, isloading1, friends, userinfo }) {
                     <Add className="text-blue-600" />
                     <span className="text-gray-700 font-medium">Create Split</span>
                 </motion.button>
-
+                <CreateSplitBox 
+                    isOpen={isCreateSplitOpen} 
+                    onClose={handleCloseCreateSplit} 
+                    friends={friends} 
+                    userinfo={userinfo}
+                />
                 <motion.button
                     className="h-20 bg-white shadow-md rounded-2xl flex justify-center items-center gap-2 px-6 hover:bg-green-50 transition-colors"
                     whileHover={{ scale: 1.02 }}
@@ -827,24 +829,7 @@ export function Dashboard({ name, isloading1, friends, userinfo }) {
                 </motion.button>
             </div>
 
-            {/* Create Split Modal */}
-            <AnimatePresence>
-                {isCreateSplitOpen && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                    >
-                        <MemoizedCreateSplitBox 
-                            isOpen={isCreateSplitOpen} 
-                            onClose={handleCloseCreateSplit} 
-                            friends={friends} 
-                            userinfo={userinfo} 
-                        />
-                    </motion.div>
-                )}
-            </AnimatePresence>
+
 
             {/* Main Content */}
             <div className="flex flex-col lg:flex-row gap-6">
@@ -958,5 +943,3 @@ export function Dashboard({ name, isloading1, friends, userinfo }) {
         </div>
     );
 }
-
-
