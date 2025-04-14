@@ -564,7 +564,7 @@ export function CreateSplitBox({ isOpen, onClose , friends,userinfo}) {
   const DEFAULT_FORM_STATE = {
     description: "",
     image: "https://img.com",
-    currency: "",
+    currency: "INR",
     amount: "",
     note: "",
     participants: [],
@@ -761,7 +761,7 @@ export function CreateSplitBox({ isOpen, onClose , friends,userinfo}) {
           name: p.name, 
           email: p.email 
         })),
-        paidById: Number(formData.paidById), // Ensure this is a number
+        paidById: Number(formData.paidById), 
         splitType: formData.splitType,
         shares: formData.splitType === "SHARES" ? formData.shares : undefined,
         percentages: formData.splitType === "PERCENTAGE" ? formData.percentages : undefined,
@@ -840,16 +840,9 @@ export function CreateSplitBox({ isOpen, onClose , friends,userinfo}) {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Total Amount*</label>
                   <div className="flex">
-                    <select
-                      name="currency"
-                      value={formData.currency}
-                      onChange={handleChange}
-                      className="p-2 border rounded-l-md bg-gray-100 focus:ring-blue-500 focus:border-blue-500"
-                    >
-                      <option value="INR">₹ INR</option>
-                      <option value="USD">$ USD</option>
-                      <option value="EUR">€ EUR</option>
-                    </select>
+                    <div className="p-2 border rounded-l-md bg-gray-100 flex items-center">
+                      ₹
+                    </div>
                     <input
                       type="number"
                       name="amount"
