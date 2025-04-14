@@ -14,6 +14,8 @@ export const Layout = memo(({ user, children }) => {
     const [isloading1, setLoading1] = useState(false);
     const [loadfriend, setLoadfriend] = useState(false);
     const [userinfo,setUserinfo] = useState("");
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+
 
     useEffect(() => {
         async function fetchUserData() {
@@ -94,8 +96,8 @@ export const Layout = memo(({ user, children }) => {
 
 
 
-            <BarTop friends={friends} />
-            <BarSide user={name} isloading1={isloading1}  />
+            <BarTop friends={friends} onMenuClick={()=>setSidebarOpen(!sidebarOpen)} />
+            <BarSide user={name} isOpen={sidebarOpen} isloading1={isloading1} onClose={()=>setSidebarOpen(false)} />
             <Body className="pl-[250px] pt-[60px] pb-[500px] ">
             <div >
                {React.cloneElement(children, { name, isloading1, friends, loadfriend ,userinfo})}

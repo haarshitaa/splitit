@@ -644,50 +644,50 @@ export function Dashboard({ name, isloading1, friends, userinfo }) {
             return;
         }
         
-        // const fetchBalances = async () => {
-        //     try {
-        //         setLoading(true);
-        //         const response = await axios.get('https://splititb.harshitacodes.workers.dev/balances', {
-        //             headers: { Authorization: `Bearer ${token}` }
-        //         });
-        //         setBalances(response.data.data.balances);
-        //         setSummary(response.data.data.summary);
-        //     } catch (error) {
-        //         console.error(error);
-        //     } finally {
-        //         setLoading(false);
-        //     }
-        // };
-        
-        // fetchBalances();
-
-
         const fetchBalances = async () => {
-            setLoading(true);
             try {
-                const res = await axios.get("https://splititb.harshitacodes.workers.dev/balances", {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                setLoading(true);
+                const response = await axios.get('https://splititb.harshitacodes.workers.dev/balances', {
+                    headers: { Authorization: `Bearer ${token}` }
                 });
-        
-                const balanceData = res.data.data.balances;
-                setBalances(balanceData);
-        
-                const dates = balanceData.map(entry => {
-                    const localDate = new Date(new Date(entry.updatedOn).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-                    return localDate.toISOString().split('T')[0];
-                });
-                
-                const uniqueDates = Array.from(new Set(dates));
-                setSplitDates(uniqueDates);
-
+                setBalances(response.data.data.balances);
+                setSummary(response.data.data.summary);
             } catch (error) {
-                console.error("Error fetching balances:", error);
+                console.error(error);
             } finally {
                 setLoading(false);
             }
         };
+        
+        fetchBalances();
+
+
+        // const fetchBalances = async () => {
+        //     setLoading(true);
+        //     try {
+        //         const res = await axios.get("https://splititb.harshitacodes.workers.dev/balances", {
+        //             headers: {
+        //                 Authorization: `Bearer ${token}`,
+        //             },
+        //         });
+        
+        //         const balanceData = res.data.data.balances;
+        //         setBalances(balanceData);
+        
+        //         const dates = balanceData.map(entry => {
+        //             const localDate = new Date(new Date(entry.updatedOn).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+        //             return localDate.toISOString().split('T')[0];
+        //         });
+                
+        //         const uniqueDates = Array.from(new Set(dates));
+        //         setSplitDates(uniqueDates);
+
+        //     } catch (error) {
+        //         console.error("Error fetching balances:", error);
+        //     } finally {
+        //         setLoading(false);
+        //     }
+        // };
         
           
           fetchBalances();
