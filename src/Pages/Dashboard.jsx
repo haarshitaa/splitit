@@ -627,17 +627,16 @@ import {
   AccountCircle
 } from '@mui/icons-material';
 
-
 export function Dashboard({ name, isloading1, friends, userinfo }) {
     const navigate = useNavigate();
     const [isCreateSplitOpen, setIsCreateSplitOpen] = useState(false);
     const [date, setDate] = useState(new Date());
     const [isExpanded, setIsExpanded] = useState(false);
-    const [showGreeting, setShowGreeting] = useState(true);
     const token = localStorage.getItem("token");
     const [loading, setLoading] = useState(true);
     const [balances, setBalances] = useState([]);
     const [summary, setSummary] = useState(null);
+    const [splitDates, setSplitDates] = useState([]);
 
     useEffect(() => {
         if (!token) {
@@ -645,25 +644,53 @@ export function Dashboard({ name, isloading1, friends, userinfo }) {
             return;
         }
         
+        // const fetchBalances = async () => {
+        //     try {
+        //         setLoading(true);
+        //         const response = await axios.get('https://splititb.harshitacodes.workers.dev/balances', {
+        //             headers: { Authorization: `Bearer ${token}` }
+        //         });
+        //         setBalances(response.data.data.balances);
+        //         setSummary(response.data.data.summary);
+        //     } catch (error) {
+        //         console.error(error);
+        //     } finally {
+        //         setLoading(false);
+        //     }
+        // };
+        
+        // fetchBalances();
+
+
         const fetchBalances = async () => {
+            setLoading(true);
             try {
-                setLoading(true);
-                const response = await axios.get('https://splititb.harshitacodes.workers.dev/balances', {
-                    headers: { Authorization: `Bearer ${token}` }
+                const res = await axios.get("https://splititb.harshitacodes.workers.dev/balances", {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
                 });
-                setBalances(response.data.data.balances);
-                setSummary(response.data.data.summary);
+        
+                const balanceData = res.data.data.balances;
+                setBalances(balanceData);
+        
+                const dates = balanceData.map(entry => {
+                    const localDate = new Date(new Date(entry.updatedOn).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+                    return localDate.toISOString().split('T')[0];
+                });
+                
+                const uniqueDates = Array.from(new Set(dates));
+                setSplitDates(uniqueDates);
+
             } catch (error) {
-                console.error(error);
+                console.error("Error fetching balances:", error);
             } finally {
                 setLoading(false);
             }
         };
         
-        fetchBalances();
-        
-        const timer = setTimeout(() => setShowGreeting(false), 4000);
-        return () => clearTimeout(timer);
+          
+          fetchBalances();
     }, [token, navigate]);
 
     const formatCurrency = (amount) => {
@@ -674,13 +701,6 @@ export function Dashboard({ name, isloading1, friends, userinfo }) {
             maximumFractionDigits: 0
         }).format(amount);
     };
-
-    // const greetingAnimation = useSpring({
-    //     height: showGreeting ? 144 : 0,
-    //     opacity: showGreeting ? 1 : 0,
-    //     marginBottom: showGreeting ? 24 : 0,
-    //     config: { tension: 200, friction: 30 }
-    // });
 
     const BalanceCard = React.memo(({ name, email, amount, type, formattedAmount, updatedOn }) => {
         return (
@@ -783,24 +803,6 @@ export function Dashboard({ name, isloading1, friends, userinfo }) {
     return (
         <div className="min-h-[calc(100vh-7rem)] p-4 bg-gray-50">
             {/* Animated Greeting Section */}
-            {/* <animated.div 
-                style={greetingAnimation}
-                className="w-full overflow-hidden"
-            >
-                <motion.div 
-                    className="w-full h-36 bg-boxclr shadow-lg rounded-3xl flex flex-col justify-center items-center text-white"
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.5 }}
-                >
-                    <AccountCircle sx={{ fontSize: 48 }} />
-                    <h1 className="text-2xl font-semibold mt-2">
-                        Welcome back, {`${userinfo?.name || 'User'}`}!
-                    </h1>
-                    <p className="text-sm opacity-80">Let's manage your expenses</p>
-                </motion.div>
-            </animated.div> */}
 
             {/* Action Buttons */}
             <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -917,7 +919,7 @@ export function Dashboard({ name, isloading1, friends, userinfo }) {
                 </div>
 
                 {/* Right Section - Calendar */}
-                {/* {!isExpanded && (
+               {!isExpanded && (
                     <motion.div 
                         className="lg:w-1/3"
                         initial={{ opacity: 0, x: 20 }}
@@ -930,15 +932,40 @@ export function Dashboard({ name, isloading1, friends, userinfo }) {
                                 <Calendar 
                                     onChange={setDate} 
                                     value={date} 
-                                    className="border-0 w-full"
-                                    tileClassName={({ date, view }) => 
-                                        view === 'month' && date.getDay() === 0 ? 'text-red-500' : null
-                                    }
-                                />
+                                    className="w-full rounded-xl border-0 text-sm custom-calendar"
+                                    tileClassName={({ date: tileDate }) => {
+                                        const localDate = new Date(tileDate.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+                                        const dateStr = localDate.toISOString().split('T')[0];
+                                    
+                                        const isSplitDay = splitDates.includes(dateStr);
+                                        const isToday = localDate.toDateString() === new Date().toDateString();
+                                        const isSelected = date.toDateString() === tileDate.toDateString();
+                                    
+                                        return [
+                                            isSplitDay ? 'bg-yellow-200 text-yellow-800 font-semibold' : '',
+                                            isToday ? 'border border-blue-300' : '',
+                                            isSelected ? 'bg-blue-500 text-white font-semibold' : '',
+                                            'rounded-full py-2 relative hover:bg-gray-100 transition-all'
+                                        ].join(' ');
+                                    }}
+                                    
+                                    tileContent={({ date: tileDate }) => {
+                                        const localDate = new Date(tileDate.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+                                        const dateStr = localDate.toISOString().split('T')[0];
+                                    
+                                        return splitDates.includes(dateStr) ? (
+                                            <div className="absolute bottom-1 w-full flex justify-center">
+                                                <span className="text-xs">🔥</span>
+                                            </div>
+                                        ) : null;
+                                    }}
+                                    
+                                    />
+
                             </div>
                         </div>
                     </motion.div>
-                )} */}
+                )} 
             </div>
         </div>
     );
