@@ -342,7 +342,7 @@ export function History() {
     const fetchAllUpdates = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("http://127.0.0.1:8787/allupdates", {
+        const response = await axios.get("https://splititb.harshitacodes.workers.dev/allupdates", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
