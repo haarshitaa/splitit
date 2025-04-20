@@ -65,3 +65,13 @@
 .react-calendar__month-view__days__day {
   @apply py-2;
 }
+
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
